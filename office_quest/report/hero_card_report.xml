@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- REPORT ACTION -->
+    <record id="action_report_hero_card" model="ir.actions.report">
+        <field name="name">Hero Card</field>
+        <field name="model">game.profile</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">office_quest.report_hero_card_template</field>
+        <field name="report_file">office_quest.report_hero_card_template</field>
+        <field name="binding_model_id" ref="model_game_profile"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- QWEB TEMPLATE -->
+    <template id="report_hero_card_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+
+                        <!-- Hero Name -->
+                        <h1 style="text-align: center;">
+                            <t t-esc="doc.name"/>
+                        </h1>
+
+                        <hr/>
+
+                        <!-- Hero Stats -->
+                        <table class="table table-bordered" style="width: 100%;">
+                            <tbody>
+                                <tr>
+                                    <td><strong>Class</strong></td>
+                                    <td><t t-esc="doc.hero_class"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Level</strong></td>
+                                    <td><t t-esc="doc.level"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Experience Points</strong></td>
+                                    <td><t t-esc="doc.xp"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Active Player</strong></td>
+                                    <td>
+                                        <t t-if="doc.is_active_player">Yes</t>
+                                        <t t-else="">No</t>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Bio -->
+                        <t t-if="doc.bio">
+                            <h3>Bio</h3>
+                            <p><t t-esc="doc.bio"/></p>
+                        </t>
+
+                        <!-- Badges -->
+                        <t t-if="doc.badge_ids">
+                            <h3>Badges</h3>
+                            <ul>
+                                <t t-foreach="doc.badge_ids" t-as="badge">
+                                    <li><t t-esc="badge.name"/></li>
+                                </t>
+                            </ul>
+                        </t>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

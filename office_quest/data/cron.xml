@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="ir_cron_weekly_xp_bonus" model="ir.cron">
+        <field name="name">Office Quest: Weekly XP Bonus</field>
+        <field name="model_id" ref="model_game_profile"/>
+        <field name="state">code</field>
+        <field name="code">model.action_weekly_xp_bonus()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">weeks</field>
+        <field name="active">True</field>
+    </record>
+
+</odoo>

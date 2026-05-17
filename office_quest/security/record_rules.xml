@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Users can only see their own hero profile -->
+    <record id="rule_game_profile_user" model="ir.rule">
+        <field name="name">Game Profile: Users see own profile</field>
+        <field name="model_id" ref="model_game_profile"/>
+        <field name="groups" eval="[(4, ref('office_quest.group_office_quest_user'))]"/>
+        <field name="domain_force">
+            [('id', '=', user.profile_id.id)]
+        </field>
+        <field name="perm_read">1</field>
+        <field name="perm_write">1</field>
+        <field name="perm_create">0</field>
+        <field name="perm_unlink">0</field>
+    </record>
+
+    <!-- Managers can see all hero profiles -->
+    <record id="rule_game_profile_manager" model="ir.rule">
+        <field name="name">Game Profile: Managers see all profiles</field>
+        <field name="model_id" ref="model_game_profile"/>
+        <field name="groups" eval="[(4, ref('office_quest.group_office_quest_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read">1</field>
+        <field name="perm_write">1</field>
+        <field name="perm_create">0</field>
+        <field name="perm_unlink">0</field>
+    </record>
+
+</odoo>

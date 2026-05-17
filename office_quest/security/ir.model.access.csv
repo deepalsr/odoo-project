@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_game_profile_user,access_game_profile_user,model_game_profile,office_quest.group_office_quest_user,1,1,1,0
+access_game_profile_manager,access_game_profile_manager,model_game_profile,office_quest.group_office_quest_manager,1,1,1,1
+access_game_badge_user,access_game_badge_user,model_game_badge,office_quest.group_office_quest_user,1,0,0,0
+access_game_badge_manager,access_game_badge_manager,model_game_badge,office_quest.group_office_quest_manager,1,1,1,1
+access_game_award_xp_wizard,access_game_award_xp_wizard,model_game_award_xp_wizard,office_quest.group_office_quest_manager,1,1,1,1
