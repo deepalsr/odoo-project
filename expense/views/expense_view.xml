@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="expense_view_list_final" model="ir.ui.view">
+        <field name="name">expense.list.final</field>
+        <field name="model">expense.expense</field>
+        <field name="arch" type="xml">
+            <list string="Expenses">
+                <field name="spent_by"/>
+                <field name="name"/>
+                <field name="amount" sum="Total Amount"/>
+                <field name="date"/>
+                <field name="category"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="expense_view_form_final" model="ir.ui.view">
+        <field name="name">expense.form.final</field>
+        <field name="model">expense.expense</field>
+        <field name="arch" type="xml">
+            <form string="Expense">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="spent_by"/>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="amount"/>
+                            <field name="date"/>
+                            <field name="category"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="expense_view_graph_final" model="ir.ui.view">
+        <field name="name">expense.graph.final</field>
+        <field name="model">expense.expense</field>
+        <field name="arch" type="xml">
+            <graph string="Expense Analysis" type="bar">
+                <field name="spent_by"/>
+                <field name="amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="expense_action_final" model="ir.actions.act_window">
+        <field name="name">Expenses</field>
+        <field name="res_model">expense.expense</field>
+        <field name="view_mode">list,graph,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Create your first expense!</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_root_final" name="Expense Tracker" sequence="1"/>
+    <menuitem id="menu_sub_final" name="My Expenses" parent="menu_root_final" action="expense_action_final" sequence="1"/>
+</odoo>
