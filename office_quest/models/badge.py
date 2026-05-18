@@ -1,4 +1,4 @@
-from odoo import models, fields
+from odoo import models, fields, api
 
 
 class Badge(models.Model):
@@ -11,9 +11,16 @@ class Badge(models.Model):
     color = fields.Integer(string='Color Index', default=0)
     emoji = fields.Char(string='Emoji', default='🏆')
 
-    def name_get(self):
-        result = []
+    display_name = fields.Char(
+        string='Display Name',
+        compute='_compute_display_name',
+        store=True,
+    )
+
+    @api.depends('name', 'emoji')
+    def _compute_display_name(self):
         for record in self:
-            name = f"{record.emoji} {record.name}" if record.emoji else record.name
-            result.append((record.id, name))
-        return result
+            if record.emoji:
+                record.display_name = f"{record.emoji} {record.name}"
+            else:
+                record.display_name = record.name

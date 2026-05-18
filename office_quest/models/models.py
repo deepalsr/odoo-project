@@ -50,11 +50,11 @@ class GameProfile(models.Model):
 
     def _check_and_award_badges(self, record):
         first_kill = self.env['game.badge'].search(
-            [('name', '=', 'First Kill')], limit=1)
+            [('name', '=', '💀 First Kill')], limit=1)
         high_achiever = self.env['game.badge'].search(
-            [('name', '=', 'High Achiever')], limit=1)
+            [('name', '=', '🏆 High Achiever')], limit=1)
         legend = self.env['game.badge'].search(
-            [('name', '=', 'Legend')], limit=1)
+            [('name', '=', '🦸 Legend')], limit=1)
 
         if record.xp >= 100 and first_kill:
             if first_kill not in record.badge_ids:
