@@ -3,8 +3,9 @@ from odoo import models, fields, api
 class GameProfile(models.Model):
     _name = 'game.profile'
     _description = 'Office Quest - Player Profile'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
 
-    name = fields.Char(string='Hero Name', required=True)
+    name = fields.Char(string='Hero Name', required=True, tracking=True)
 
     hero_class = fields.Selection([
         ('warrior', 'Warrior'),
@@ -13,10 +14,10 @@ class GameProfile(models.Model):
         ('rogue', 'Rogue'),
     ], string='Class', default='warrior')
 
-    xp = fields.Integer(string='Experience Points', default=0)
+    xp = fields.Integer(string='Experience Points', default=0, tracking=True)
     level = fields.Integer(string='Level', default=1)
     bio = fields.Text(string='Hero Bio')
-    is_active_player = fields.Boolean(string='Active Player', default=True)
+    is_active_player = fields.Boolean(string='Active Player', default=True, tracking=True)
 
     badge_ids = fields.Many2many(
         comodel_name='game.badge',
