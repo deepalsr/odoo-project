@@ -91,31 +91,43 @@
                 <field name="level"/>
                 <field name="xp"/>
                 <field name="is_active_player"/>
+                <field name="badge_ids"/>
 
                 <templates>
                     <t t-name="card">
                         <div class="oe_kanban_global_click">
 
+                            <!-- Hero Class Emoji + Name -->
                             <div class="o_kanban_record_top">
                                 <div class="o_kanban_record_headings">
                                     <strong class="o_kanban_record_title">
+                                        <t t-if="record.hero_class.value == 'warrior'">⚔️ </t>
+                                        <t t-if="record.hero_class.value == 'wizard'">🧙 </t>
+                                        <t t-if="record.hero_class.value == 'healer'">💚 </t>
+                                        <t t-if="record.hero_class.value == 'rogue'">🗡️ </t>
                                         <field name="name"/>
                                     </strong>
                                     <br/>
                                     <field name="hero_class" widget="badge"/>
-                                    
                                 </div>
                             </div>
 
+                            <!-- Stats -->
                             <div class="o_kanban_record_body">
-                                <div>Level: <field name="level"/></div>
-                                <div>XP: <field name="xp"/></div>
+                                <div>⭐ Level: <field name="level"/></div>
+                                <div>✨ XP: <field name="xp"/></div>
                             </div>
 
+                            <!-- Badges -->
+                            <div class="o_kanban_record_body" t-if="record.badge_ids.raw_value.length">
+                                <div>🏆 Badges:</div>
+                                <field name="badge_ids" widget="many2many_tags"/>
+                            </div>
+
+                            <!-- Active toggle -->
                             <div class="o_kanban_record_bottom">
                                 <div class="oe_kanban_bottom_left">
-                                    <field name="is_active_player"
-                                           widget="boolean_toggle"/>
+                                    <field name="is_active_player" widget="boolean_toggle"/>
                                 </div>
                             </div>
 
@@ -136,7 +148,8 @@
                     <button name="%(office_quest.action_award_xp_wizard)d"
                             string="Award Bonus XP"
                             type="action"
-                            class="btn-primary"/>
+                            class="btn-primary"
+                            groups="office_quest.group_office_quest_manager"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
