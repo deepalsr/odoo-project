@@ -25,6 +25,18 @@ class GameProfile(models.Model):
         column2='badge_id',
         string='Badges',
     )
+    rank = fields.Integer(
+    string="Rank",
+    compute="_compute_rank",
+    store=False,
+    )
+
+    @api.depends("xp")
+    def _compute_rank(self):
+        all_profiles = self.search([], order="xp desc")
+        rank_map = {profile.id: index + 1 for index, profile in enumerate(all_profiles)}
+        for record in self:
+            record.rank = rank_map.get(record.id, 0)
 
     @api.onchange('xp')
     def _onchange_xp(self):

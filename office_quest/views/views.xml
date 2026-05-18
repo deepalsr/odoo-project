@@ -94,15 +94,19 @@
                 <field name="xp"/>
                 <field name="is_active_player"/>
                 <field name="badge_ids"/>
+                <field name="rank"/>
 
                 <templates>
                     <t t-name="card">
-                        <div class="oe_kanban_global_click">
+                        <div t-attf-style="border-radius: 8px; border: 3px solid {{ record.rank.raw_value == 1 and '#FFD700' or record.rank.raw_value == 2 and '#C0C0C0' or record.rank.raw_value == 3 and '#CD7F32' or 'transparent' }};">
 
-                            <!-- Hero Name + Class Emoji -->
+                            <!-- Hero Name + Medal + Class Emoji -->
                             <div class="o_kanban_record_top">
                                 <div class="o_kanban_record_headings">
                                     <strong class="o_kanban_record_title">
+                                        <t t-if="record.rank.raw_value == 1">🥇 </t>
+                                        <t t-if="record.rank.raw_value == 2">🥈 </t>
+                                        <t t-if="record.rank.raw_value == 3">🥉 </t>
                                         <t t-if="record.hero_class.raw_value == 'warrior'">⚔️ </t>
                                         <t t-if="record.hero_class.raw_value == 'wizard'">🧙 </t>
                                         <t t-if="record.hero_class.raw_value == 'healer'">💚 </t>
@@ -214,7 +218,12 @@
         <field name="name">game.profile.list</field>
         <field name="model">game.profile</field>
         <field name="arch" type="xml">
-            <list string="Heroes">
+            <list string="Heroes"
+                  default_order="xp desc"
+                  decoration-warning="rank == 1"
+                  decoration-info="rank == 2"
+                  decoration-muted="rank == 3">
+                <field name="rank" string="#"/>
                 <field name="name"/>
                 <field name="hero_class"/>
                 <field name="level"/>
