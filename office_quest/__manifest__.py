@@ -5,7 +5,7 @@
     'summary': 'Turn work into an RPG adventure',
     'author': 'Dipal Shrestha',
     'license': 'LGPL-3',
-    'depends': ['base','sale','project','male'],
+    'depends': ['base','sale','project','mail'],
     'data': [
         'security/groups.xml',
         'security/ir.model.access.csv',

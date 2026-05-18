@@ -26,6 +26,13 @@ class GameProfile(models.Model):
         column2='badge_id',
         string='Badges',
     )
+
+    log_ids = fields.One2many(
+    comodel_name='game.xp.log',
+    inverse_name='profile_id',
+    string='XP History',
+    )
+
     rank = fields.Integer(
     string="Rank",
     compute="_compute_rank",
@@ -38,6 +45,36 @@ class GameProfile(models.Model):
         rank_map = {profile.id: index + 1 for index, profile in enumerate(all_profiles)}
         for record in self:
             record.rank = rank_map.get(record.id, 0)
+
+    def _get_thread_with_access(self, thread_id, mode='read', **kwargs):
+        thread = self.browse(thread_id)
+        if not thread.exists():
+            return self.env['game.profile']
+        if mode == 'read':
+            return thread if self.env.user.has_group('office_quest.group_office_quest_user') else self.env['game.profile']
+        if mode in ('write', 'create'):
+            return thread if self.env.user.has_group('office_quest.group_office_quest_manager') else self.env['game.profile']
+        return self.env['game.profile']
+
+    def apply_xp(self, amount, reason, source='manual', task_id=None):
+        self.ensure_one()
+        self.xp += amount
+        sign = '+' if amount >= 0 else ''
+    # Post to chatter
+        self.message_post(
+            body=f"⚡ XP {sign}{amount} — {reason} <i>[{source}]</i>",
+            message_type='notification',
+        )
+    # Write to XP log
+        log_vals = {
+            'profile_id': self.id,
+            'xp_change': amount,
+            'reason': reason,
+            'source': source,
+        }
+        if task_id:
+            log_vals['task_id'] = task_id
+        self.env['game.xp.log'].create(log_vals)  
 
     @api.onchange('xp')
     def _onchange_xp(self):
@@ -56,10 +93,11 @@ class GameProfile(models.Model):
 
         return result
 
+    
     def action_weekly_xp_bonus(self):
         active_profiles = self.search([('is_active_player', '=', True)])
         for profile in active_profiles:
-            profile.xp += 50
+            profile.apply_xp(50, 'Weekly activity bonus', source='cron')
 
     def _check_and_award_badges(self, record):
         first_kill = self.env['game.badge'].search(
