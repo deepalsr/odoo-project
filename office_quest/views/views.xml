@@ -14,7 +14,8 @@
                         </h1>
                     </div>
                     <group>
-                        <field name="icon" widget="image"/>
+                        <field name="emoji"/>
+                        <field name="color" widget="color_picker"/>
                         <field name="description"/>
                     </group>
                 </sheet>
@@ -29,6 +30,7 @@
         <field name="arch" type="xml">
             <list string="Badges">
                 <field name="name"/>
+                <field name="emoji"/>
                 <field name="description"/>
             </list>
         </field>
@@ -91,31 +93,74 @@
                 <field name="level"/>
                 <field name="xp"/>
                 <field name="is_active_player"/>
+                <field name="badge_ids"/>
+                <field name="rank"/>
 
                 <templates>
                     <t t-name="card">
-                        <div class="oe_kanban_global_click">
+                        <div t-attf-style="border-radius: 8px; border: 3px solid {{ record.rank.raw_value == 1 and '#FFD700' or record.rank.raw_value == 2 and '#C0C0C0' or record.rank.raw_value == 3 and '#CD7F32' or 'transparent' }};">
 
+                            <!-- Hero Name + Medal + Class Emoji -->
                             <div class="o_kanban_record_top">
                                 <div class="o_kanban_record_headings">
                                     <strong class="o_kanban_record_title">
+                                        <t t-if="record.rank.raw_value == 1">🥇 </t>
+                                        <t t-if="record.rank.raw_value == 2">🥈 </t>
+                                        <t t-if="record.rank.raw_value == 3">🥉 </t>
+                                        <t t-if="record.hero_class.raw_value == 'warrior'">⚔️ </t>
+                                        <t t-if="record.hero_class.raw_value == 'wizard'">🧙 </t>
+                                        <t t-if="record.hero_class.raw_value == 'healer'">💚 </t>
+                                        <t t-if="record.hero_class.raw_value == 'rogue'">🗡️ </t>
                                         <field name="name"/>
                                     </strong>
                                     <br/>
-                                    <field name="hero_class" widget="badge"/>
-                                    
+                                    <t t-if="record.hero_class.raw_value == 'warrior'">
+                                        <span class="badge rounded-pill"
+                                              style="background-color: #e74c3c; color: white; padding: 2px 8px;">
+                                            ⚔️ Warrior
+                                        </span>
+                                    </t>
+                                    <t t-if="record.hero_class.raw_value == 'wizard'">
+                                        <span class="badge rounded-pill"
+                                              style="background-color: #8e44ad; color: white; padding: 2px 8px;">
+                                            🧙 Wizard
+                                        </span>
+                                    </t>
+                                    <t t-if="record.hero_class.raw_value == 'healer'">
+                                        <span class="badge rounded-pill"
+                                              style="background-color: #27ae60; color: white; padding: 2px 8px;">
+                                            💚 Healer
+                                        </span>
+                                    </t>
+                                    <t t-if="record.hero_class.raw_value == 'rogue'">
+                                        <span class="badge rounded-pill"
+                                              style="background-color: #2c3e50; color: white; padding: 2px 8px;">
+                                            🗡️ Rogue
+                                        </span>
+                                    </t>
                                 </div>
                             </div>
 
-                            <div class="o_kanban_record_body">
-                                <div>Level: <field name="level"/></div>
-                                <div>XP: <field name="xp"/></div>
+                            <!-- Stats -->
+                            <div class="o_kanban_record_body" style="margin-top: 8px;">
+                                <div>⭐ Level: <field name="level"/></div>
+                                <div>✨ XP: <field name="xp"/></div>
                             </div>
 
-                            <div class="o_kanban_record_bottom">
+                            <!-- Badges -->
+                            <div class="o_kanban_record_body"
+                                 t-if="record.badge_ids.raw_value.length"
+                                 style="margin-top: 8px;">
+                                <div style="font-weight: bold; margin-bottom: 4px;">🏆 Badges</div>
+                                <field name="badge_ids"
+                                       widget="many2many_tags"
+                                       options="{'color_field': 'color'}"/>
+                            </div>
+
+                            <!-- Active toggle -->
+                            <div class="o_kanban_record_bottom" style="margin-top: 8px;">
                                 <div class="oe_kanban_bottom_left">
-                                    <field name="is_active_player"
-                                           widget="boolean_toggle"/>
+                                    <field name="is_active_player" widget="boolean_toggle"/>
                                 </div>
                             </div>
 
@@ -136,7 +181,8 @@
                     <button name="%(office_quest.action_award_xp_wizard)d"
                             string="Award Bonus XP"
                             type="action"
-                            class="btn-primary"/>
+                            class="btn-primary"
+                            groups="office_quest.group_office_quest_manager"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -157,7 +203,9 @@
                     </group>
                     <notebook>
                         <page string="Badges">
-                            <field name="badge_ids" widget="many2many_tags"/>
+                            <field name="badge_ids"
+                                   widget="many2many_tags"
+                                   options="{'color_field': 'color'}"/>
                         </page>
                     </notebook>
                 </sheet>
@@ -170,7 +218,12 @@
         <field name="name">game.profile.list</field>
         <field name="model">game.profile</field>
         <field name="arch" type="xml">
-            <list string="Heroes">
+            <list string="Heroes"
+                  default_order="xp desc"
+                  decoration-warning="rank == 1"
+                  decoration-info="rank == 2"
+                  decoration-muted="rank == 3">
+                <field name="rank" string="#"/>
                 <field name="name"/>
                 <field name="hero_class"/>
                 <field name="level"/>
