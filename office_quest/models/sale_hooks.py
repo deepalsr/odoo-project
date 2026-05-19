@@ -26,7 +26,7 @@ class SaleOrder(models.Model):
             profile = order.user_id.profile_id if order.user_id else None
             if profile:
                 profile.apply_xp(
-                    -75,
+                    -150,
                     f'Sale cancelled: {order.name}',
                     source='sale_cancel',
                 )
