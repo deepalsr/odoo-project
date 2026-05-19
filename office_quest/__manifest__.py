@@ -11,6 +11,7 @@
         'security/ir.model.access.csv',
         'security/record_rules.xml',
         'views/views.xml',
+        'views/project_task_views.xml',
         'data/cron.xml',
         'report/hero_card_report.xml',
     ],

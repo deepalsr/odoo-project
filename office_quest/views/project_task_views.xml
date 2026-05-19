@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_project_task_form_inherit_xp" model="ir.ui.view">
+        <field name="name">project.task.form.inherit.office_quest</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_award_task_xp"
+                        string="⚡ Award XP"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-star"
+                        groups="office_quest.group_office_quest_manager"/>
+                <button name="action_deduct_task_xp"
+                        string="💀 Deduct XP"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-minus-circle"
+                        groups="office_quest.group_office_quest_manager"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
