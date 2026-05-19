@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- XP LOG LIST VIEW -->
+    <record id="view_xp_log_list" model="ir.ui.view">
+        <field name="name">game.xp.log.list</field>
+        <field name="model">game.xp.log</field>
+        <field name="arch" type="xml">
+            <list string="XP History"
+                  default_order="create_date desc"
+                  decoration-success="xp_change &gt; 0"
+                  decoration-danger="xp_change &lt; 0">
+                <field name="create_date" string="Date"/>
+                <field name="profile_id" string="Hero"/>
+                <field name="xp_change" string="XP"/>
+                <field name="reason"/>
+                <field name="source"/>
+                <field name="task_id" optional="show"/>
+                <field name="performed_by"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- XP LOG SEARCH VIEW -->
+    <record id="view_xp_log_search" model="ir.ui.view">
+        <field name="name">game.xp.log.search</field>
+        <field name="model">game.xp.log</field>
+        <field name="arch" type="xml">
+            <search string="Search XP Events">
+                <field name="profile_id"/>
+                <field name="reason"/>
+                <field name="performed_by"/>
+                <filter name="awards"
+                        string="Awards Only"
+                        domain="[('xp_change', '&gt;', 0)]"/>
+                <filter name="deductions"
+                        string="Deductions Only"
+                        domain="[('xp_change', '&lt;', 0)]"/>
+                <filter name="manual"
+                        string="Manual"
+                        domain="[('source', '=', 'manual')]"/>
+                <filter name="tasks"
+                        string="From Tasks"
+                        domain="[('source', 'in', ['task_done', 'task_cancel', 'task_deadline'])]"/>
+                <filter name="sales"
+                        string="From Sales"
+                        domain="[('source', 'in', ['sale_confirm', 'sale_cancel'])]"/>
+                <separator/>
+                <filter name="group_by_hero"
+                        string="By Hero"
+                        context="{'group_by': 'profile_id'}"/>
+                <filter name="group_by_source"
+                        string="By Source"
+                        context="{'group_by': 'source'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- XP LOG GRAPH VIEW -->
+    <record id="view_xp_log_graph" model="ir.ui.view">
+        <field name="name">game.xp.log.graph</field>
+        <field name="model">game.xp.log</field>
+        <field name="arch" type="xml">
+            <graph string="XP Events" type="bar">
+                <field name="profile_id" type="row"/>
+                <field name="xp_change" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- XP LOG PIVOT VIEW -->
+    <record id="view_xp_log_pivot" model="ir.ui.view">
+        <field name="name">game.xp.log.pivot</field>
+        <field name="model">game.xp.log</field>
+        <field name="arch" type="xml">
+            <pivot string="XP Summary">
+                <field name="profile_id" type="row"/>
+                <field name="source" type="col"/>
+                <field name="xp_change" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- XP LOG ACTION -->
+    <record id="action_xp_log" model="ir.actions.act_window">
+        <field name="name">XP History</field>
+        <field name="res_model">game.xp.log</field>
+        <field name="view_mode">list,graph,pivot</field>
+        <field name="search_view_id" ref="view_xp_log_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No XP events recorded yet!
+            </p>
+        </field>
+    </record>
+
+    <!-- MENU -->
+    <menuitem id="menu_office_quest_xp_log"
+              name="XP History"
+              parent="menu_office_quest_root"
+              action="action_xp_log"
+              sequence="40"
+              groups="office_quest.group_office_quest_manager"/>
+
+</odoo>

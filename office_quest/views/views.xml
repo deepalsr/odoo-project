@@ -53,15 +53,21 @@
         <field name="name">game.award.xp.wizard.form</field>
         <field name="model">game.award.xp.wizard</field>
         <field name="arch" type="xml">
-            <form string="Award Bonus XP">
+            <form string="Award / Deduct XP">
                 <group>
                     <field name="profile_id"/>
-                    <field name="xp_amount"/>
-                    <field name="reason"/>
+                    <field name="xp_amount"
+                           help="Use a negative number to deduct XP"/>
+                    <field name="reason"
+                           readonly="context.get('default_task_id')"/>
+                    <field name="source" readonly="1"/>
+                    <field name="task_id"
+                           readonly="1"
+                           invisible="not task_id"/>
                 </group>
                 <footer>
                     <button name="action_award_xp"
-                            string="Award XP"
+                            string="Confirm"
                             type="object"
                             class="btn-primary"/>
                     <button string="Cancel"
@@ -74,7 +80,7 @@
 
     <!-- WIZARD ACTION -->
     <record id="action_award_xp_wizard" model="ir.actions.act_window">
-        <field name="name">Award Bonus XP</field>
+        <field name="name">Award / Deduct XP</field>
         <field name="res_model">game.award.xp.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
@@ -179,7 +185,7 @@
             <form string="Hero Profile">
                 <header>
                     <button name="%(office_quest.action_award_xp_wizard)d"
-                            string="Award Bonus XP"
+                            string="Award / Deduct XP"
                             type="action"
                             class="btn-primary"
                             groups="office_quest.group_office_quest_manager"/>
@@ -206,6 +212,21 @@
                             <field name="badge_ids"
                                    widget="many2many_tags"
                                    options="{'color_field': 'color'}"/>
+                        </page>
+                        <page string="XP History"
+                              groups="office_quest.group_office_quest_manager">
+                            <field name="log_ids" readonly="True">
+                                <list default_order="create_date desc"
+                                      decoration-success="xp_change &gt; 0"
+                                      decoration-danger="xp_change &lt; 0">
+                                    <field name="create_date" string="Date"/>
+                                    <field name="xp_change" string="XP"/>
+                                    <field name="reason"/>
+                                    <field name="source"/>
+                                    <field name="task_id" optional="show"/>
+                                    <field name="performed_by"/>
+                                </list>
+                            </field>
                         </page>
                     </notebook>
                 </sheet>
