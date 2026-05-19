@@ -1,4 +1,271 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- website templates will go here -->
+
+    <!-- BASE LAYOUT -->
+    <template id="quest_layout" name="Office Quest Layout">
+        <t t-call="website.layout">
+            <t t-set="pageName" t-value="'quest'"/>
+            <div class="o_quest_wrap">
+                <!-- NAV -->
+                <nav class="navbar navbar-dark"
+                     style="background: linear-gradient(135deg, #1a1a2e, #16213e);">
+                    <div class="container">
+                        <a class="navbar-brand fw-bold" href="/quest"
+                           style="color: #FFD700; font-size: 1.4rem;">
+                            ⚔️ Office Quest
+                        </a>
+                        <div class="d-flex gap-3">
+                            <a href="/quest"
+                               class="nav-link text-white">🏆 Leaderboard</a>
+                            <t t-if="request.env.user.id != request.env.ref('base.public_user').id">
+                                <a href="/quest/my"
+                                   class="nav-link text-white">🧙 My Profile</a>
+                                <t t-if="request.env.user.has_group('office_quest.group_office_quest_manager')">
+                                    <a href="/quest/manage"
+                                       class="nav-link"
+                                       style="color: #FFD700;">⚙️ Manage</a>
+                                </t>
+                            </t>
+                            <t t-else="">
+                                <a href="/web/login"
+                                   class="nav-link text-white">🔑 Login</a>
+                            </t>
+                        </div>
+                    </div>
+                </nav>
+
+                <!-- PAGE CONTENT -->
+                <div class="container py-4">
+                    <t t-out="0"/>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- LEADERBOARD PAGE -->
+    <template id="quest_leaderboard" name="Quest Leaderboard">
+        <t t-call="office_quest.quest_layout">
+            <div class="text-center mb-4">
+                <h1 style="color: #FFD700; font-weight: bold;">
+                    🏆 Hero Leaderboard
+                </h1>
+                <p class="text-muted">Who will claim the throne?</p>
+            </div>
+
+            <div class="row g-3">
+                <t t-foreach="profiles" t-as="profile">
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 shadow"
+                             t-attf-style="
+                                border: 3px solid {{
+                                    profile_index == 0 and '#FFD700' or
+                                    profile_index == 1 and '#C0C0C0' or
+                                    profile_index == 2 and '#CD7F32' or
+                                    '#dee2e6'
+                                }};
+                                border-radius: 12px;
+                             ">
+                            <div class="card-body">
+                                <h5 class="card-title fw-bold">
+                                    <t t-if="profile_index == 0">🥇 </t>
+                                    <t t-if="profile_index == 1">🥈 </t>
+                                    <t t-if="profile_index == 2">🥉 </t>
+                                    <t t-if="profile.hero_class == 'warrior'">⚔️ </t>
+                                    <t t-if="profile.hero_class == 'wizard'">🧙 </t>
+                                    <t t-if="profile.hero_class == 'healer'">💚 </t>
+                                    <t t-if="profile.hero_class == 'rogue'">🗡️ </t>
+                                    <t t-out="profile.name"/>
+                                </h5>
+                                <p class="mb-1">
+                                    ⭐ Level <t t-out="profile.level"/>
+                                    &amp;nbsp;|&amp;nbsp;
+                                    ✨ <t t-out="profile.xp"/> XP
+                                </p>
+                                <!-- XP Progress bar to next level -->
+                                <t t-set="xp_in_level" t-value="profile.xp % 100"/>
+                                <div class="progress mt-2" style="height: 8px;">
+                                    <div class="progress-bar"
+                                         role="progressbar"
+                                         t-attf-style="width: {{xp_in_level}}%; background: #FFD700;"
+                                         t-att-aria-valuenow="xp_in_level"
+                                         aria-valuemin="0"
+                                         aria-valuemax="100"/>
+                                </div>
+                                <small class="text-muted">
+                                    <t t-out="xp_in_level"/>/100 XP to next level
+                                </small>
+                                <!-- Badges -->
+                                <t t-if="profile.badge_ids">
+                                    <div class="mt-2">
+                                        <t t-foreach="profile.badge_ids" t-as="badge">
+                                            <span class="badge bg-secondary me-1">
+                                                <t t-out="badge.name"/>
+                                            </span>
+                                        </t>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- MY PROFILE PAGE -->
+    <template id="quest_my_profile" name="My Hero Profile">
+        <t t-call="office_quest.quest_layout">
+            <div class="row">
+                <!-- Profile Card -->
+                <div class="col-md-4">
+                    <div class="card shadow text-center p-3"
+                         style="border-radius: 12px; border: 2px solid #FFD700;">
+                        <h2 class="fw-bold mt-2">
+                            <t t-if="profile.hero_class == 'warrior'">⚔️</t>
+                            <t t-if="profile.hero_class == 'wizard'">🧙</t>
+                            <t t-if="profile.hero_class == 'healer'">💚</t>
+                            <t t-if="profile.hero_class == 'rogue'">🗡️</t>
+                            <t t-out="profile.name"/>
+                        </h2>
+                        <p class="text-muted mb-1">
+                            Level <t t-out="profile.level"/> —
+                            <t t-out="profile.xp"/> XP
+                        </p>
+                        <!-- XP Progress bar -->
+                        <t t-set="xp_in_level" t-value="profile.xp % 100"/>
+                        <div class="progress my-2" style="height: 12px;">
+                            <div class="progress-bar"
+                                 role="progressbar"
+                                 t-attf-style="width: {{xp_in_level}}%; background: #FFD700;"
+                                 t-att-aria-valuenow="xp_in_level"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100"/>
+                        </div>
+                        <small class="text-muted">
+                            <t t-out="xp_in_level"/>/100 XP to next level
+                        </small>
+                        <!-- Badges -->
+                        <t t-if="profile.badge_ids">
+                            <div class="mt-3">
+                                <h6 class="fw-bold">🏆 Badges</h6>
+                                <t t-foreach="profile.badge_ids" t-as="badge">
+                                    <span class="badge bg-warning text-dark me-1 mb-1">
+                                        <t t-out="badge.name"/>
+                                    </span>
+                                </t>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- XP History -->
+                <div class="col-md-8">
+                    <h4 class="fw-bold mb-3">⚡ XP History</h4>
+                    <t t-if="logs">
+                        <div class="list-group">
+                            <t t-foreach="logs" t-as="log">
+                                <div class="list-group-item list-group-item-action"
+                                     t-attf-style="border-left: 4px solid {{log.xp_change > 0 and '#28a745' or '#dc3545'}};">
+                                    <div class="d-flex justify-content-between">
+                                        <span class="fw-bold"
+                                              t-attf-style="color: {{log.xp_change > 0 and '#28a745' or '#dc3545'}};">
+                                            <t t-if="log.xp_change > 0">+</t>
+                                            <t t-out="log.xp_change"/> XP
+                                        </span>
+                                        <small class="text-muted">
+                                            <t t-out="log.create_date"/>
+                                        </small>
+                                    </div>
+                                    <p class="mb-0 text-muted small">
+                                        <t t-out="log.reason"/>
+                                    </p>
+                                </div>
+                            </t>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <p class="text-muted">No XP events yet. Go do something heroic!</p>
+                    </t>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- MANAGE PAGE -->
+    <template id="quest_manage" name="Quest Manager Panel">
+        <t t-call="office_quest.quest_layout">
+            <h2 class="fw-bold mb-4" style="color: #FFD700;">
+                ⚙️ Manager Panel
+            </h2>
+
+            <!-- Heroes Summary -->
+            <h4 class="mb-3">🦸 All Heroes</h4>
+            <div class="table-responsive mb-5">
+                <table class="table table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Hero</th>
+                            <th>Class</th>
+                            <th>Level</th>
+                            <th>XP</th>
+                            <th>Active</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="profiles" t-as="profile">
+                            <tr>
+                                <td><t t-out="profile_index + 1"/></td>
+                                <td class="fw-bold"><t t-out="profile.name"/></td>
+                                <td><t t-out="profile.hero_class"/></td>
+                                <td><t t-out="profile.level"/></td>
+                                <td><t t-out="profile.xp"/></td>
+                                <td>
+                                    <t t-if="profile.is_active_player">
+                                        <span class="badge bg-success">Active</span>
+                                    </t>
+                                    <t t-else="">
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    </t>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Recent XP Events -->
+            <h4 class="mb-3">⚡ Recent XP Events</h4>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Date</th>
+                            <th>Hero</th>
+                            <th>XP</th>
+                            <th>Reason</th>
+                            <th>Source</th>
+                            <th>By</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="logs" t-as="log">
+                            <tr t-attf-class="{{log.xp_change > 0 and 'table-success' or 'table-danger'}}">
+                                <td><small><t t-out="log.create_date"/></small></td>
+                                <td><t t-out="log.profile_id.name"/></td>
+                                <td class="fw-bold">
+                                    <t t-if="log.xp_change > 0">+</t>
+                                    <t t-out="log.xp_change"/>
+                                </td>
+                                <td><t t-out="log.reason"/></td>
+                                <td><t t-out="log.source"/></td>
+                                <td><t t-out="log.performed_by.name"/></td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+        </t>
+    </template>
+
 </odoo>
