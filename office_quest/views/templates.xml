@@ -71,8 +71,6 @@
                     font-size: 1rem;
                     letter-spacing: 1px;
                 }
-
-                /* HERO CARD */
                 .hero-card {
                     background: linear-gradient(145deg, #1a1a2e, #16213e);
                     border-radius: 16px;
@@ -130,8 +128,6 @@
                 .class-wizard  { background: rgba(142,68,173,0.2); color: #9b59b6; border: 1px solid #9b59b6; }
                 .class-healer  { background: rgba(39,174,96,0.2);  color: #2ecc71; border: 1px solid #2ecc71; }
                 .class-rogue   { background: rgba(52,73,94,0.5);   color: #95a5a6; border: 1px solid #7f8c8d; }
-
-                /* XP BAR */
                 .xp-bar-wrap {
                     background: #0d0d1a;
                     border-radius: 10px;
@@ -156,8 +152,6 @@
                     font-weight: 700;
                     font-size: 0.95rem;
                 }
-
-                /* BADGES */
                 .quest-badge {
                     display: inline-block;
                     background: rgba(255,215,0,0.1);
@@ -168,14 +162,10 @@
                     font-size: 0.75rem;
                     margin: 2px;
                 }
-
-                /* RANK MEDAL */
                 .rank-medal {
                     font-size: 1.4rem;
                     margin-right: 4px;
                 }
-
-                /* PROFILE PAGE */
                 .profile-card {
                     background: linear-gradient(145deg, #1a1a2e, #16213e);
                     border: 2px solid #FFD700;
@@ -199,8 +189,6 @@
                     font-size: 0.95rem;
                     margin-bottom: 16px;
                 }
-
-                /* XP LOG */
                 .xp-log-item {
                     background: #1a1a2e;
                     border-radius: 10px;
@@ -218,8 +206,6 @@
                 .xp-amount-negative { color: #e74c3c; font-weight: 800; font-size: 1.1rem; }
                 .xp-log-reason { color: #aaa; font-size: 0.85rem; margin-top: 2px; }
                 .xp-log-date { color: #555; font-size: 0.75rem; }
-
-                /* MANAGER TABLE */
                 .quest-table {
                     width: 100%;
                     border-collapse: separate;
@@ -254,8 +240,6 @@
                 .quest-table tbody tr.negative td:first-child {
                     border-left: 3px solid #e74c3c;
                 }
-
-                /* SECTION TITLE */
                 .section-title {
                     color: #FFD700;
                     font-weight: 800;
@@ -264,17 +248,47 @@
                     padding-bottom: 8px;
                     border-bottom: 1px solid #2a2a4a;
                 }
-
-                /* ACTIVE BADGE */
                 .badge-active   { background: rgba(46,204,113,0.2); color: #2ecc71; border: 1px solid #2ecc71; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; }
                 .badge-inactive { background: rgba(127,140,141,0.2); color: #7f8c8d; border: 1px solid #7f8c8d; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; }
-
-                /* EMPTY STATE */
                 .empty-state {
                     text-align: center;
                     padding: 60px 20px;
                     color: #555;
                     font-size: 1.1rem;
+                }
+                .badge-goal-bar {
+                    background: #0d0d1a;
+                    border-radius: 10px;
+                    height: 10px;
+                    margin: 6px 0 4px;
+                    overflow: hidden;
+                    border: 1px solid #2a2a4a;
+                }
+                .badge-goal-fill {
+                    height: 100%;
+                    border-radius: 10px;
+                    background: linear-gradient(90deg, #8e44ad, #9b59b6);
+                    box-shadow: 0 0 8px rgba(155,89,182,0.6);
+                    transition: width 1s ease;
+                }
+            </style>
+
+            <!-- Hide Odoo default header and footer -->
+            <style>
+                header.o_header_standard,
+                header#top,
+                div#oe_main_menu_navbar,
+                .o_main_navbar,
+                .o_header_hide_on_scroll,
+                footer.o_footer,
+                footer#bottom,
+                .o_website_logo,
+                #wrapwrap > footer {
+                    display: none !important;
+                }
+                body, #wrapwrap {
+                    padding-top: 0 !important;
+                    margin-top: 0 !important;
                 }
             </style>
 
@@ -320,7 +334,6 @@
                     <div class="col-md-6 col-lg-4">
                         <div t-attf-class="hero-card {{ profile_index == 0 and 'gold' or profile_index == 1 and 'silver' or profile_index == 2 and 'bronze' or '' }}">
 
-                            <!-- Rank + Name -->
                             <div class="d-flex align-items-center mb-2">
                                 <t t-if="profile_index == 0">
                                     <span class="rank-medal">🥇</span>
@@ -341,7 +354,6 @@
                                 </span>
                             </div>
 
-                            <!-- Class Badge -->
                             <div>
                                 <t t-if="profile.hero_class == 'warrior'">
                                     <span class="hero-class-badge class-warrior">⚔️ WARRIOR</span>
@@ -357,7 +369,6 @@
                                 </t>
                             </div>
 
-                            <!-- Level + XP -->
                             <div class="d-flex justify-content-between align-items-center mt-3">
                                 <span style="color:#aaa; font-size:0.85rem;">
                                     ⭐ Level <t t-out="profile.level"/>
@@ -367,7 +378,6 @@
                                 </span>
                             </div>
 
-                            <!-- XP Progress Bar -->
                             <t t-set="xp_in_level" t-value="profile.xp % 100"/>
                             <div class="xp-bar-wrap">
                                 <div class="xp-bar-fill"
@@ -377,7 +387,6 @@
                                 <t t-out="xp_in_level"/>/100 to next level
                             </div>
 
-                            <!-- Badges -->
                             <t t-if="profile.badge_ids">
                                 <div class="mt-3">
                                     <t t-foreach="profile.badge_ids" t-as="badge">
@@ -423,7 +432,6 @@
                             Level <t t-out="profile.level"/> Hero
                         </div>
 
-                        <!-- Class Badge -->
                         <div class="mb-3">
                             <t t-if="profile.hero_class == 'warrior'">
                                 <span class="hero-class-badge class-warrior">⚔️ WARRIOR</span>
@@ -439,12 +447,10 @@
                             </t>
                         </div>
 
-                        <!-- XP -->
                         <div class="xp-amount mb-1">
                             ✨ <t t-out="profile.xp"/> XP
                         </div>
 
-                        <!-- XP Bar -->
                         <t t-set="xp_in_level" t-value="profile.xp % 100"/>
                         <div class="xp-bar-wrap">
                             <div class="xp-bar-fill"
@@ -454,11 +460,11 @@
                             <t t-out="xp_in_level"/>/100 XP to next level
                         </div>
 
-                        <!-- Badges -->
+                        <!-- Earned Badges -->
                         <t t-if="profile.badge_ids">
                             <div class="mt-2">
                                 <div style="color:#FFD700; font-weight:700; margin-bottom:8px;">
-                                    🏆 Badges
+                                    🏆 Badges Earned
                                 </div>
                                 <t t-foreach="profile.badge_ids" t-as="badge">
                                     <span class="quest-badge">
@@ -467,6 +473,57 @@
                                 </t>
                             </div>
                         </t>
+
+                        <!-- Badge Progress Reminders -->
+                        <t t-if="badge_progress">
+                            <div class="mt-4">
+                                <div style="color:#FFD700; font-weight:700; margin-bottom:12px;">
+                                    🎯 Next Badge Goals
+                                </div>
+                                <t t-foreach="badge_progress" t-as="bp">
+                                    <div style="margin-bottom: 14px;">
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span style="color:#e0e0e0; font-size:0.85rem; font-weight:600;">
+                                                <t t-out="bp['badge'].name"/>
+                                            </span>
+                                            <span style="font-size:0.75rem;">
+                                                <t t-if="bp['type'] == 'xp'">
+                                                    <span style="color:#e74c3c; font-weight:700;">
+                                                        <t t-out="bp['remaining']"/> XP to go
+                                                    </span>
+                                                </t>
+                                                <t t-if="bp['type'] == 'level'">
+                                                    <span style="color:#e74c3c; font-weight:700;">
+                                                        <t t-out="bp['remaining']"/> levels to go
+                                                    </span>
+                                                </t>
+                                            </span>
+                                        </div>
+                                        <div class="badge-goal-bar">
+                                            <div class="badge-goal-fill"
+                                                 t-attf-style="width: {{bp['percent']}}%;"/>
+                                        </div>
+                                        <div class="xp-text mt-1">
+                                            <t t-if="bp['type'] == 'xp'">
+                                                <t t-out="bp['current']"/> /
+                                                <t t-out="bp['needed']"/> XP
+                                            </t>
+                                            <t t-if="bp['type'] == 'level'">
+                                                Level <t t-out="bp['current']"/> /
+                                                <t t-out="bp['needed']"/>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </t>
+                            </div>
+                        </t>
+
+                        <t t-if="not badge_progress">
+                            <div class="mt-4" style="color:#2ecc71; font-size:0.85rem; text-align:center;">
+                                🎉 All badges earned! You are a legend.
+                            </div>
+                        </t>
+
                     </div>
                 </div>
 
