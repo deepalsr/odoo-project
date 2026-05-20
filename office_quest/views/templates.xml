@@ -330,7 +330,7 @@
             </div>
 
             <div class="row g-4">
-                <t t-foreach="profiles" t-as="profile">
+                <t t-foreach="profiles" t-as="profile" t-foreach-index="profile_index">
                     <div class="col-md-6 col-lg-4">
                         <div t-attf-class="hero-card {{ profile_index == 0 and 'gold' or profile_index == 1 and 'silver' or profile_index == 2 and 'bronze' or '' }}">
 
