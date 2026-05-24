@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- LIST VIEW -->
+    <record id="view_game_xp_rule_list" model="ir.ui.view">
+        <field name="name">game.xp.rule.list</field>
+        <field name="model">game.xp.rule</field>
+        <field name="arch" type="xml">
+            <list string="XP Rules"
+                  decoration-muted="not active">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="model_id"/>
+                <field name="field_id"/>
+                <field name="action"/>
+                <field name="xp_amount"/>
+                <field name="reason"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- FORM VIEW -->
+    <record id="view_game_xp_rule_form" model="ir.ui.view">
+        <field name="name">game.xp.rule.form</field>
+        <field name="model">game.xp.rule</field>
+        <field name="arch" type="xml">
+            <form string="XP Rule">
+                <sheet>
+                    <widget name="web_ribbon"
+                            title="Inactive"
+                            bg_color="text-bg-danger"
+                            invisible="active"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="e.g. Award XP on Sale Confirm"/>
+                        </h1>
+                    </div>
+
+                    <group string="Trigger — when does this rule fire?">
+                        <group>
+                            <field name="model_id"
+                                   options="{'no_create': True}"/>
+                            <field name="field_id"
+                                   options="{'no_create': True}"/>
+                            <field name="field_type" invisible="1"/>
+                        </group>
+                        <group>
+                            <!-- Selection trigger -->
+                            <field name="trigger_value_selection"
+                                   string="When value becomes"
+                                   invisible="field_type != 'selection'"
+                                   required="field_type == 'selection'"/>
+
+                            <!-- Boolean trigger -->
+                            <field name="trigger_value_boolean"
+                                   string="When value is"
+                                   invisible="field_type != 'boolean'"/>
+
+                            <!-- Integer trigger -->
+                            <field name="trigger_operator"
+                                   invisible="field_type != 'integer'"
+                                   required="field_type == 'integer'"/>
+                            <field name="trigger_value_integer"
+                                   string="Value"
+                                   invisible="field_type != 'integer'"
+                                   required="field_type == 'integer'"/>
+                        </group>
+                    </group>
+
+                    <group string="Reward — what XP happens?">
+                        <group>
+                            <field name="action"/>
+                            <field name="xp_amount"/>
+                        </group>
+                        <group>
+                            <field name="reason"/>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+
+                    <!-- Help box -->
+                    <div class="alert alert-info" role="alert">
+                        <strong>💡 How priority works:</strong>
+                        If a Python hook exists for the same model + field + value,
+                        it takes priority and this UI rule is skipped.
+                        UI rules only fire when no Python hook matches.
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ACTION -->
+    <record id="action_game_xp_rule" model="ir.actions.act_window">
+        <field name="name">XP Rules</field>
+        <field name="res_model">game.xp.rule</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first XP Rule!
+            </p>
+            <p>
+                Rules fire automatically when a field changes on any model.
+                No Python code needed.
+            </p>
+        </field>
+    </record>
+
+</odoo>
