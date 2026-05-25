@@ -15,8 +15,8 @@ class XpLog(models.Model):
     xp_change = fields.Integer(string='XP Change', required=True)
     reason = fields.Char(string='Reason', required=True)
 
-    # Char instead of Selection — any source string works now.
-    # Examples: 'python_hook', 'ui_rule', 'mixin_manual', 'cron'
+    # Char instead of Selection — any source string works.
+    # Examples: 'python_hook', 'mixin_manual', 'cron', 'manual'
     source = fields.Char(
         string='Source',
         default='manual',

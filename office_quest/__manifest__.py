@@ -16,7 +16,6 @@
         'security/record_rules.xml',
         'views/views.xml',
         'views/xp_log_views.xml',
-        'views/xp_rule_views.xml',
         'views/templates.xml',
         'data/cron.xml',
         'report/hero_card_report.xml',
