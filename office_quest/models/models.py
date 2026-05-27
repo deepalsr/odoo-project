@@ -52,12 +52,10 @@ class GameProfile(models.Model):
         thread = self.browse(thread_id)
         if not thread.exists():
             return self.env['game.profile']
-        # Allow read for any office quest user
         if mode == 'read':
             return thread if self.env.user.has_group(
                 'office_quest.group_office_quest_user'
             ) else self.env['game.profile']
-        # Allow write/create for managers OR the user owning this profile
         if mode in ('write', 'create'):
             is_manager = self.env.user.has_group(
                 'office_quest.group_office_quest_manager'
@@ -70,18 +68,23 @@ class GameProfile(models.Model):
             return self.env['game.profile']
         return self.env['game.profile']
 
-    def apply_xp(self, amount, reason, source='manual', task_id=None):
-        """Central method — all XP changes must go through here."""
+    def apply_xp(self, amount, reason, source='manual', task_id=None, trusted=False):
+        """Central method - all XP changes must go through here.
+
+        Args:
+            amount  : XP to add (positive) or remove (negative)
+            reason  : Human-readable description of why
+            source  : Where the XP came from (for the log)
+            task_id : Optional related task
+            trusted : If True, bypasses the manager-only check.
+                      xp.mixin always passes trusted=True so any
+                      consumer module works without a hardcoded whitelist.
+        """
         self.ensure_one()
 
-        # Authorization — manual XP changes only allowed for managers
-        # Automated sources (sale, task, cron) bypass this check
-        automated_sources = {
-            'sale_confirm', 'sale_cancel',
-            'task_done', 'task_cancel', 'task_deadline',
-            'cron',
-        }
-        if source == 'manual' and not self.env.user.has_group(
+        # Manual XP only allowed for managers UNLESS trusted=True.
+        # xp.mixin passes trusted=True for all automated flows.
+        if not trusted and source == 'manual' and not self.env.user.has_group(
             'office_quest.group_office_quest_manager'
         ):
             raise AccessError(
@@ -91,14 +94,11 @@ class GameProfile(models.Model):
         self.xp += amount
         sign = '+' if amount >= 0 else ''
 
-        # Post to chatter — use sudo() so automated sources
-        # (salesperson, cron) can post without write permission issues
         self.sudo().message_post(
             body=f"⚡ XP {sign}{amount} — {reason} <i>[{source}]</i>",
             message_type='notification',
         )
 
-        # Write to XP log
         log_vals = {
             'profile_id': self.id,
             'xp_change': amount,
@@ -126,7 +126,7 @@ class GameProfile(models.Model):
     def action_weekly_xp_bonus(self):
         active_profiles = self.search([('is_active_player', '=', True)])
         for profile in active_profiles:
-            profile.apply_xp(50, 'Weekly activity bonus', source='cron')
+            profile.apply_xp(50, 'Weekly activity bonus', source='cron', trusted=True)
 
     def _check_and_award_badges(self, record):
         first_kill = self.env['game.badge'].search(

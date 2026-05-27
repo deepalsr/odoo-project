@@ -1,6 +1,5 @@
 from . import badge
 from . import models
-from . import sale_hooks
+from . import xp_mixin
 from . import wizard
 from . import xp_log
-from . import project_hooks

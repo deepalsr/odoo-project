@@ -13,33 +13,48 @@ class AwardXpWizard(models.TransientModel):
     xp_amount = fields.Integer(
         string='XP Amount',
         default=50,
-        help='Use a negative value to deduct XP',
+        help='Positive to award, negative to deduct.',
     )
     reason = fields.Char(
         string='Reason',
         required=True,
     )
-    source = fields.Selection([
-        ('manual', 'Manual Award'),
-        ('sale_confirm', 'Sale Confirmed'),
-        ('sale_cancel', 'Sale Cancelled'),
-        ('task_done', 'Task Completed'),
-        ('task_cancel', 'Task Cancelled'),
-        ('task_deadline', 'Missed Deadline'),
-        ('cron', 'Weekly Bonus'),
-    ], string='Source', default='manual', readonly=True)
+
+    # Char — not hardcoded Selection.
+    # Set automatically by the button/context that opened this wizard.
+    source = fields.Char(
+        string='Source',
+        default='manual',
+        readonly=True,
+    )
+
     task_id = fields.Many2one(
         comodel_name='project.task',
         string='Related Task',
         readonly=True,
     )
 
+    # Record reference — routes through xp.mixin if available
+    task_model = fields.Char(readonly=True)
+    task_record_id = fields.Integer(readonly=True)
+
     def action_award_xp(self):
         self.ensure_one()
+
+        if self.task_model and self.task_record_id:
+            # Route through xp.mixin — preferred path
+            record = self.env[self.task_model].browse(self.task_record_id)
+            if record.exists():
+                record.award_xp_now(self.xp_amount, self.reason, source=self.source)
+                return {'type': 'ir.actions.act_window_close'}
+
+        # Fallback — direct profile award (e.g. from profile form)
+        # trusted=True because this is an intentional manager action
         self.profile_id.apply_xp(
             self.xp_amount,
             self.reason,
             source=self.source,
             task_id=self.task_id.id if self.task_id else None,
+            trusted=True,
         )
         return {'type': 'ir.actions.act_window_close'}
